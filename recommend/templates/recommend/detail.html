@@ -12,80 +12,337 @@
     </ul>
 {% endif %}
 
-<div class="container-fluid col-sm-offset-1">
-
+<div class="container-fluid movie-container">
     <div class="row">
-        <!-- Left Movie Info -->
-        <div class="col-sm-2 col-md-3">
-<!--            <div class="panel panel-default">-->
-<!--                <div class="panel-body" style="border-radius: 22px 22px 22px 22px;">-->
-                    <a href="#">
-                        <img src="{{ movies.movie_logo.url}}" class="img-responsive" style="border-radius: 22px 22px 22px 22px;">
-                    </a>
-                    <h2></h2>
-<!--                </div>-->
-<!--            </div>-->
+        <!-- Movie Navigation - Left Swipe -->
+        <div class="col-sm-2 col-xs-1 d-flex align-items-center justify-content-center">
+            <a href="{% url 'detail' movies.id|add:'-1' %}" class="swipe-button swipe-left">
+                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </a>
         </div>
-        <!-- Right Movie Info -->
-        <div class="col-sm-offset-1 col-sm-4 col-md-4">
-            <h1 style="color:#fff">{{movies.title}}</h1>
-            <h3><small>Genre: {{movies.genre}}</small></h3>
+        
+        <!-- Center Movie Content -->
+        <div class="col-sm-8 col-xs-10">
+            <div class="text-center">
+                <h1 class="movie-title">{{movies.title}}</h1>
+                <h3 class="movie-genre">Genre: {{movies.genre}}</h3>
+                
+                <!-- Centered Movie Image -->
+                <div class="movie-poster-container">
+                    <img src="{{ movies.movie_logo.url}}" class="img-responsive center-block movie-poster">
+                </div>
+                
+                <!-- Rating and Watchlist Section -->
+                <div class="movie-actions">
+                    <!-- Rating Form -->
+                    <form class="form-horizontal" role="search" method="post" action="{% url 'detail' movies.id %}" onsubmit="return validateForm()" name="ratingForm">
+                        <div class="form-group">
+                            <div class="star-rating">
+                                <span>Rate Movie</span>
+                                <div class="rating-stars">
+                                    <span class="fa fa-star-o" data-rating="1"></span>
+                                    <span class="fa fa-star-o" data-rating="2"></span>
+                                    <span class="fa fa-star-o" data-rating="3"></span>
+                                    <span class="fa fa-star-o" data-rating="4"></span>
+                                    <span class="fa fa-star-o" data-rating="5"></span>
+                                </div>
+                                
+                                {% if rate_flag %}
+                                    <input type="hidden" name="rating" class="rating-value" value="{{movie_rating}}">
+                                {% else %}
+                                    <input type="hidden" name="rating" class="rating-value" value="0">
+                                {% endif %}
+                                {% csrf_token %}
+                            </div>
+                            
+                            <div class="text-center">
+                                <input type="submit" class="button" value="Submit Rating">
+                            </div>
+                        </div>
+                    </form>
 
-            <div class="col-sm-offset-0 col-sm-8">
-                <form class="form-horizontal" role="search" method="post" action="{% url 'detail' movies.id %}" onsubmit="return validateForm()"  name="ratingForm">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="row">
-                                <div class="col-lg-14">
-                                    <div class="star-rating">
-                                        <span>Rate Movie</span>
-                                        <span class="fa fa-star-o" data-rating="1"></span>
-                                        <span class="fa fa-star-o" data-rating="2"></span>
-                                        <span class="fa fa-star-o" data-rating="3"></span>
-                                        <span class="fa fa-star-o" data-rating="4"></span>
-                                        <span class="fa fa-star-o" data-rating="5"></span>
-                                        
-                                        {% if rate_flag %}
-                                            <input type="hidden" name="rating" class="rating-value" value="{{movie_rating}}" >
-                                        {% else %}
-                                            <input type="hidden" name="rating" class="rating-value" value="0">
-                                        {% endif %}
-                                        {% csrf_token %}
-                                    </div>
+                    <!-- Watchlist Form -->
+                    <form class="form-horizontal" role="search" method="post" action="{% url 'detail' movies.id %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="watchlist-option">
+                                <div class="checkbox-wrapper">
+                                    <span>Add to my list</span>
+                                    {% if update %}
+                                    <input type="checkbox" name="watch" checked>
+                                    <input type="submit" class="button" value="Remove from List" name="watch">
+                                    {% else %}
+                                    <input type="checkbox" name="watch">
+                                    <input type="submit" class="button" value="Add to List">
+                                    {% endif %}
                                 </div>
                             </div>
-                            <input type="submit" class="button" value="Submit">
                         </div>
-                    </div>
-                </form>
-
-                <form class="form-horizontal" role="search" method="post" action="{% url 'detail' movies.id %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="row">
-                                <div class="col-lg-14">
-                                    <div class="star-rating">
-                                        <span>Add to my list  </span>
-                                        {% if update %}
-                                        <input type="checkbox" name="watch" checked>
-                                        <input type="submit" class="button" value="Remove" name="watch">
-                                        {% else %}
-                                        <input type="checkbox" name="watch">
-                                        <input type="submit" class="button" value="Add">
-
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-<!--                            <input type="submit" class="button" value="Add">-->
-                        </div>
-                    </div>
-                </form>
-
+                    </form>
+                </div>
             </div>
+        </div>
+        
+        <!-- Movie Navigation - Right Swipe -->
+        <div class="col-sm-2 col-xs-1 d-flex align-items-center justify-content-center">
+            <a href="{% url 'detail' movies.id|add:'1' %}" class="swipe-button swipe-right">
+                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </a>
         </div>
     </div>
 </div>
 
+<style>
+    body {
+        background-color: #0a192f;
+        color: #fff;
+    }
+    
+    .movie-container {
+        padding: 20px 0;
+    }
+    
+    .movie-title {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+        text-align: center;
+        color: #fff;
+        font-weight: 600;
+    }
+    
+    .movie-genre {
+        font-size: 1.2rem;
+        color: #8892b0;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .movie-poster-container {
+        margin: 20px auto;
+        max-width: 350px;
+    }
+    
+    .movie-poster {
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        transition: transform 0.3s ease;
+    }
+    
+    .movie-poster:hover {
+        transform: scale(1.03);
+    }
+    
+    .movie-actions {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: rgba(16, 33, 65, 0.6);
+        border-radius: 12px;
+    }
+    
+    .star-rating, .watchlist-option {
+        margin: 15px 0;
+    }
+    
+    .star-rating span.fa, .fa-star, .fa-star-o {
+        color: #ffc107;
+        font-size: 24px;
+        cursor: pointer;
+        margin: 0 3px;
+    }
+    
+    .button {
+        background-color: #64ffda;
+        color: #0a192f;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+    
+    .button:hover {
+        background-color: #4cdbbc;
+        transform: translateY(-2px);
+    }
+    
+    .swipe-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #64ffda;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 3rem;
+        opacity: 0.7;
+    }
+    
+    .swipe-button:hover {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    
+    .swipe-left {
+        float: left;
+    }
+    
+    .swipe-right {
+        float: right;
+    }
+    
+    .checkbox-wrapper {
+        margin: 10px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .movie-title {
+            font-size: 2rem;
+        }
+        
+        .movie-genre {
+            font-size: 1rem;
+        }
+        
+        .swipe-button {
+            font-size: 2rem;
+        }
+        
+        .movie-poster-container {
+            max-width: 250px;
+        }
+        
+        .star-rating span.fa {
+            font-size: 20px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .movie-title {
+            font-size: 1.8rem;
+        }
+        
+        .swipe-button {
+            font-size: 1.5rem;
+        }
+        
+        .movie-poster-container {
+            max-width: 200px;
+        }
+        
+        .star-rating span.fa {
+            font-size: 18px;
+        }
+        
+        .button {
+            padding: 8px 16px;
+        }
+    }
+</style>
+
+<script>
+    // Script for star rating functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.star-rating .fa');
+        const ratingValue = document.querySelector('.rating-value');
+        
+        // Initialize stars based on existing rating
+        function updateStars(value) {
+            stars.forEach(star => {
+                const starValue = parseInt(star.getAttribute('data-rating'));
+                if (starValue <= value) {
+                    star.classList.remove('fa-star-o');
+                    star.classList.add('fa-star');
+                } else {
+                    star.classList.remove('fa-star');
+                    star.classList.add('fa-star-o');
+                }
+            });
+        }
+        
+        // Set initial stars if rating exists
+        if (ratingValue.value > 0) {
+            updateStars(ratingValue.value);
+        }
+        
+        // Add click events to stars
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = this.getAttribute('data-rating');
+                ratingValue.value = value;
+                updateStars(value);
+            });
+            
+            // Hover effects
+            star.addEventListener('mouseover', function() {
+                const value = this.getAttribute('data-rating');
+                stars.forEach(s => {
+                    const starValue = s.getAttribute('data-rating');
+                    if (starValue <= value) {
+                        s.classList.remove('fa-star-o');
+                        s.classList.add('fa-star');
+                    } else {
+                        s.classList.remove('fa-star');
+                        s.classList.add('fa-star-o');
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseout', function() {
+                updateStars(ratingValue.value);
+            });
+        });
+    });
+    
+    // Form validation
+    function validateForm() {
+        const ratingValue = document.querySelector('.rating-value').value;
+        if (ratingValue == 0) {
+            alert("Please select a rating before submitting");
+            return false;
+        }
+        return true;
+    }
+    
+    // Make swipe buttons responsive
+    window.addEventListener('resize', function() {
+        adjustSwipeButtonsSize();
+    });
+    
+    function adjustSwipeButtonsSize() {
+        const windowWidth = window.innerWidth;
+        
+        if (windowWidth < 576) {
+            // Small screens
+            document.querySelectorAll('.swipe-button i').forEach(icon => {
+                icon.style.fontSize = '1.5rem';
+            });
+        } else if (windowWidth < 768) {
+            // Medium screens
+            document.querySelectorAll('.swipe-button i').forEach(icon => {
+                icon.style.fontSize = '2rem';
+            });
+        } else {
+            // Large screens
+            document.querySelectorAll('.swipe-button i').forEach(icon => {
+                icon.style.fontSize = '3rem';
+            });
+        }
+    }
+    
+    // Call on page load
+    adjustSwipeButtonsSize();
+</script>
 {% endblock %}
